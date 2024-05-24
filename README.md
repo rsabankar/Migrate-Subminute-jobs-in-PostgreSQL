@@ -153,8 +153,7 @@ BEGIN
   _job_what := (select distinct j.command from cron.job_run_details j JOIN cron.job jd ON j.jobid = jd.jobid WHERE jd.jobname = job_name)::text;
   --PERFORM cron.schedule(job_name, _current_time, job_query::text);
   PERFORM cron.schedule(job_name, _current_time, _job_what);
-  
-  --update the job_query to query from cron.job and cron.job_run_details [Pending]
+
   
   _job_current_seqid := (SELECT last_value FROM cron.jobid_seq)::text;
   
@@ -192,7 +191,6 @@ BEGIN
   -- Generate a job name based on the provided prefix
   _job_name := dbms_job.generate_job_name(job_prefix);
   l_job := 'SELECT mydemo.func_sleep_ins(''' || _job_name || ''')';
-  -- Create schedule to run immediately and ONCE of the defined l_job mydemo.func_sleep_insv2
   call dbms_job.submit_delay(_job_name, l_job);
 end;
 $body$;
